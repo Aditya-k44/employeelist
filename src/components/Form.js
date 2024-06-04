@@ -188,7 +188,6 @@ export const Form = () => {
               value="phoneNo"
               checked={formData.mode.phone}
               onChange={onChangeHandler}
-              required
             />
             <label htmlFor="phone" className="form-label">
                Phone Number
@@ -200,7 +199,6 @@ export const Form = () => {
               value="email"
               checked={formData.mode.mail}
               onChange={onChangeHandler}
-              required
             />
             <label htmlFor="mail" className="form-label">
                Email
