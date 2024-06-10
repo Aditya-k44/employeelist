@@ -57,7 +57,13 @@ export const Form = () => {
     event.preventDefault();
     setTableData([...tableData, formData]);
     resetForm();
+    
   };
+  console.log("tableData", tableData);
+
+  const deleteRow = (index) =>{
+    
+  }
 
   return (
     <>
@@ -278,8 +284,7 @@ export const Form = () => {
           </tr>
         </thead>
         <tbody>
-          {tableData.map((data, index) => {
-            console.log(data);
+          {tableData.map((data, index) => 
             <tr key={index}>
               <td>{data.firstName}</td>
               <td>{data.middleName}</td>
@@ -295,10 +300,10 @@ export const Form = () => {
               <td>{data.joiner}</td>
               <td>
                 <button>Edit</button>
-                <button>Delete</button>
+                <button onClick={deleteRow}>Delete</button>
               </td>
-            </tr>;
-          })}
+            </tr>
+          )}
         </tbody>
       </table>
     </>
