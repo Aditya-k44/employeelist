@@ -18,6 +18,8 @@ export const Form = () => {
   });
 
   const [tableData, setTableData] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(null);
 
   const onChangeHandler = (event) => {
     const { name, value, type, checked } = event.target;
@@ -26,18 +28,19 @@ export const Form = () => {
         ...formData,
         mode: {
           ...formData.mode,
-          [event.target.name]: checked,
+          [name]: checked,
         },
       });
     } else {
-      setFormData(() => ({
+      setFormData({
         ...formData,
         [name]: value,
-      }));
+      });
     }
   };
+
   const resetForm = () => {
-    setFormData(() => ({
+    setFormData({
       firstName: "",
       middleName: "",
       lastName: "",
@@ -50,24 +53,40 @@ export const Form = () => {
       },
       maritalStatus: "",
       joiner: "",
-    }));
+    });
+    setIsEditing(false);
+    setCurrentIndex(null);
   };
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
-    setTableData([...tableData, formData]);
+    if (isEditing) {
+      const updatedData = tableData.map((data, index) =>
+        index === currentIndex ? formData : data
+      );
+      setTableData(updatedData);
+      setIsEditing(false);
+      setCurrentIndex(null);
+    } else {
+      setTableData([...tableData, formData]);
+    }
     resetForm();
-    
   };
-  console.log("tableData", tableData);
 
-  const deleteRow = (index) =>{
-    
-  }
+  const editRow = (index) => {
+    setIsEditing(true);
+    setCurrentIndex(index);
+    setFormData(tableData[index]);
+  };
+
+  const deleteRow = (index) => {
+    const filteredData = tableData.filter((_, i) => i !== index);
+    setTableData(filteredData);
+  };
 
   return (
     <>
-    <h1>Employee Form</h1>
+      <h1>Employee Form</h1>
       <form onSubmit={onSubmitHandler}>
         <div className="form-main">
           <label htmlFor="firstName" className="form-label">
@@ -164,7 +183,7 @@ export const Form = () => {
             className="form-data"
             type="email"
             name="email"
-            checked={formData.email}
+            value={formData.email}
             onChange={onChangeHandler}
           />
         </div>
@@ -176,7 +195,7 @@ export const Form = () => {
             className="form-data"
             type="number"
             name="phoneNo"
-            checked={formData.phoneNo}
+            value={formData.phoneNo}
             onChange={onChangeHandler}
           />
         </div>
@@ -186,30 +205,30 @@ export const Form = () => {
           </label>
           <br />
           <div>
-          <div>
-            <input
-              type="checkbox"
-              className="align"
-              name="phone"
-              value="phoneNo"
-              checked={formData.mode.phone}
-              onChange={onChangeHandler}
-            />
-            <label htmlFor="phone" className="form-label">
-               Phone Number
-            </label>
-            <input
-              type="checkbox"
-              className="align"
-              name="mail"
-              value="email"
-              checked={formData.mode.mail}
-              onChange={onChangeHandler}
-            />
-            <label htmlFor="mail" className="form-label">
-               Email
-            </label>
-          </div>
+            <div>
+              <input
+                type="checkbox"
+                className="align"
+                name="phone"
+                value="phoneNo"
+                checked={formData.mode.phone}
+                onChange={onChangeHandler}
+              />
+              <label htmlFor="phone" className="form-label">
+                Phone Number
+              </label>
+              <input
+                type="checkbox"
+                className="align"
+                name="mail"
+                value="email"
+                checked={formData.mode.mail}
+                onChange={onChangeHandler}
+              />
+              <label htmlFor="mail" className="form-label">
+                Email
+              </label>
+            </div>
           </div>
         </div>
         <div className="form-main">
@@ -261,7 +280,7 @@ export const Form = () => {
         </div>
         <div className="form-main">
           <button type="submit" className="btn">
-            Submit
+            {isEditing ? "Update" : "Submit"}
           </button>
           <button type="button" className="btn" onClick={resetForm}>
             Clear
@@ -280,11 +299,11 @@ export const Form = () => {
             <th>Mode</th>
             <th>MaritalStatus</th>
             <th>Im-Joiner</th>
-            <th>Edit/Delet</th>
+            <th>Edit/Delete</th>
           </tr>
         </thead>
         <tbody>
-          {tableData.map((data, index) => 
+          {tableData.map((data, index) => (
             <tr key={index}>
               <td>{data.firstName}</td>
               <td>{data.middleName}</td>
@@ -299,11 +318,11 @@ export const Form = () => {
               <td>{data.maritalStatus}</td>
               <td>{data.joiner}</td>
               <td>
-                <button>Edit</button>
-                <button onClick={deleteRow}>Delete</button>
+                <button onClick={() => editRow(index)}>Edit</button>
+                <button onClick={() => deleteRow(index)}>Delete</button>
               </td>
             </tr>
-          )}
+          ))}
         </tbody>
       </table>
     </>
